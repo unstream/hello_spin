@@ -1,0 +1,8 @@
+apiVersion: core.spinoperator.dev/v1alpha1
+kind: SpinApp
+metadata:
+  name: hello-spin
+spec:
+  image: "docker.io/adessoinwe/hello-spin:latest"
+  executor: containerd-shim-spin
+  replicas: 2

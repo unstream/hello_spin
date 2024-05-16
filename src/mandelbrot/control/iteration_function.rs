@@ -35,4 +35,14 @@ mod tests {
 
         assert_eq!(result, max_iterations);
     }
+    #[test]
+    fn test_point_not_in_mandelbrot_set() {
+        let x = 2.0;
+        let y = 2.0;
+        let max_iterations = 20;
+
+        let result = mandelbrot(x, y, max_iterations);
+
+        assert_ne!(result, max_iterations, "Point should not be in the Mandelbrot set");
+    }
 }

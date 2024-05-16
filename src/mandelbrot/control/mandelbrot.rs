@@ -1,27 +1,16 @@
 
-use image::{Rgb, RgbImage};
+use image::{ImageBuffer, Luma};
 use log::info;
 use rayon::prelude::*;
 use crate::mandelbrot::control::{iteration_function};
-use crate::images::color_palette::ColorPalette;
 use crate::mandelbrot::entity::fractal::Fractal;
 
-pub fn generate_mandelbrot(fractal: Fractal) -> RgbImage {
-    let palette = ColorPalette::new(fractal.max_iterations);
+/// Generate the imagedata
+pub fn generate_mandelbrot_data(fractal: &Fractal) -> ImageBuffer<Luma<u16>, Vec<u16>> {
 
     let start = std::time::Instant::now();
-    let mut img = RgbImage::new(fractal.width, fractal.height);
+    let mut img = image::ImageBuffer::new(fractal.width, fractal.height);
     let max_iterations = fractal.max_iterations;
-
-    // Define a function for color mapping
-    let map_value_to_color = |value: u32| {
-        if value == max_iterations {
-            Rgb([0, 0, 255]) // Black color for points in the Mandelbrot set
-        } else {
-            let color_index: usize = (value % (palette.get_palette().len() as u32)) as usize;
-            palette.get_palette()[color_index]
-        }
-    };
 
     let rows: Vec<_> = (0..fractal.height)
         .into_par_iter()
@@ -29,18 +18,39 @@ pub fn generate_mandelbrot(fractal: Fractal) -> RgbImage {
             (0..fractal.width).map(move |x| {
                 let x = (f64::from(x) / f64::from(fractal.width)) * (fractal.c1 - fractal.c0) + fractal.c0;
                 let y = (f64::from(y) / f64::from(fractal.height)) * (fractal.c1i - fractal.c0i) + fractal.c0i;
-
-                let value = iteration_function::mandelbrot(x, y, max_iterations);
-                map_value_to_color(value)
+                iteration_function::mandelbrot(x, y, max_iterations)
             }).collect::<Vec<_>>()
         }).collect();
 
     for (y, row) in rows.into_iter().enumerate() {
-        for (x, pixel) in row.into_iter().enumerate() {
-            img.put_pixel(x as u32, y as u32, pixel);
+        for (x, value) in row.into_iter().enumerate() {
+            img.put_pixel(x as u32, y as u32, image::Luma([(value * 65536 / fractal.max_iterations) as u16]));
         }
     }
     info!("Mandelbrot set generated in {} ms", start.elapsed().as_millis());
     img
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::mandelbrot::entity::fractal::Fractal;
+
+    #[test]
+    fn test_generate_mandelbrot() {
+        let fractal = Fractal {
+            c0: -2.0,
+            c1: 1.0,
+            c0i: -1.5,
+            c1i: 1.5,
+            width: 40,
+            height: 40,
+            max_iterations: 256,
+        };
+
+        let result = generate_mandelbrot_data(&fractal);
+
+        assert_eq!(result.width(), 40);
+        assert_eq!(result.height(), 40);
+    }
+}

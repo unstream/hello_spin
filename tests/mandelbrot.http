@@ -1,8 +1,25 @@
+GET http://localhost:3000/mandelbrot?c0=-1.5&c0i=-1.0&c1=0.5&c1i=1.0&width=500&height=500&max_iterations=250
+###
+
+GET http://localhost:3000/mandelbrot?c0=-0.75&c0i=0.0997&c1=-0.74&c1i=0.1097&width=1000&height=1000&max_iterations=10000
+###
+
+# Health check
+GET http://localhost:3000/.well-known/spin/health
+###
+
+# Run spi locally in docker on port 80 docker
 GET http://localhost:3000/mandelbrot?c0=-1.5&c0i=-1.0&c1=0.5&c1i=1.0&width=500&height=500&max_iterations=100
 ###
-GET https://hello-spin-pw6oxxq1.fermyon.app/mandelbrot?c0=-1.5&c0i=-1.0&c1=0.5&c1i=1.0&width=500&height=500&max_iterations=100
+
+GET https://hello-spin-unstream.fermyon.app/mandelbrot?c0=-1.5&c0i=-1.0&c1=0.5&c1i=1.0&width=500&height=500&max_iterations=100
 ###
 GET http://localhost:3000/mandelbrot?c0=-0.5496070882875711&c0i=-0.6272707068686887&c1=-0.5496070519168428&c1i=-0.6272706704979604&width=500&height=500&max_iterations=20000
 ###
 GET https://hello-spin-pw6oxxq1.fermyon.app/mandelbrot?c0=-0.5496070882875711&c0i=-0.6272707068686887&c1=-0.5496070519168428&c1i=-0.6272706704979604&width=500&height=500&max_iterations=20000
 ###
+# Old impl in RUST
+GET http://localhost:8080/fractal?c0=-1.5&c0i=-1.0&c1=0.5&c1i=1.0&width=500&height=500&max_iterations=100
+###
+# Spin local in k3d
+GET http://localhost:8083/mandelbrot?c0=-1.5&c0i=-1.0&c1=0.5&c1i=1.0&width=500&height=500&max_iterations=100
